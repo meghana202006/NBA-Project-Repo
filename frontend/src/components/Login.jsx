@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles  from "../styles/tailwindClasses";
+import {loginStyles as styles}  from "../styles/tailwindClasses";
 import {FiMail} from "react-icons/fi"
 import {FaLock} from "react-icons/fa"
 import { FaShieldAlt } from 'react-icons/fa';
@@ -18,6 +18,8 @@ function Login() {
     }
     const onSubmit =(e)=>{
         e.preventDefault();
+        const userData = formData;
+        setFormData({email:"",password:""})
         console.log(formData)
     }
   return (
@@ -33,7 +35,7 @@ function Login() {
           </label>
           <div className="relative">
           <FiMail className="absolute left-3 top-7 text-gray-400" />
-          <input id="usr" name='email'placeholder="Enter email id"className={styles.inputField} onChange={handleChange} value={formData.username}></input>
+          <input id="usr" name='email'placeholder="Enter email id"className={styles.inputField} onChange={handleChange} value={formData.email}></input>
           </div>
           <label for="pwd" className={styles.labelBase}>
             Password
