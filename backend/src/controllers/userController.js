@@ -12,15 +12,18 @@ const generateToken = (id)=>{
 
 // register controller
 const register = async (req,res)=>{
-    const {name, email, password} = req.body;
+    const {name, email, password, designation, department, qualification} = req.body;
     try{
         // input type check
         if (
             typeof name !== "string"||
             typeof email !== "string"||
-            typeof password !== "string"
+            typeof password !== "string"||
+            typeof designation !== "string" ||
+            typeof department !== "string" ||
+            typeof qualification !== "string"
         ) {
-            return res.status(400).json({message: "invalid input"});
+            return res.status(400).json({message: "Invalid input"});
         }
         // no duplicate
         const lowerEmail = email.toLowerCase().trim();
@@ -35,6 +38,9 @@ const register = async (req,res)=>{
             name,
             email: lowerEmail,
             password,
+            designation,
+            department,
+            qualification
         });
         if(user) {
            return res.status(201).json({
@@ -42,7 +48,7 @@ const register = async (req,res)=>{
            });
         }
     } catch (err){
-        res.status(500).json({message: "server error"});
+        res.status(500).json({message: "invalid input"});
     }
 };
 
@@ -96,13 +102,7 @@ const verifyOTP = async (req,res) => {
         if(!user){
             return res.status(400).json({message: "User not found"});
         } 
-        console.log("Input OTP:", otp, "| Type:", typeof otp);
-        console.log("DB OTP:", user.otp, "| Type:", typeof user.otp);
-        console.log("Current Time:", Date.now());
-        console.log("Expiry Time:", user.otpExpires ? user.otpExpires.getTime() : "No Expiry");
-        console.log("Match?", user.otp === otp);
-        console.log("Not Expired?", user.otpExpires > Date.now());
-
+        
         // otp check
         if (user.otp === otp && user.otpExpires > Date.now()){
             // clearing otp

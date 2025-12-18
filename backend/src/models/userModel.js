@@ -15,6 +15,30 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    designation:{
+        type: String,
+        required:true,
+        enum:[
+            'HOD',
+            'Faculty',
+            'Principal'
+        ]
+    },
+    department:{
+        type: String,
+        required:true,
+        enum:[
+            'Computer Science Engg',
+            'Electronics & Communication Engg', 
+            'Mechanical Engg', 
+            'Civil Engg', 
+            'Architecture'
+        ]
+    },
+    qualification:{
+        type:String,
+        required:true
+    },
     otp: {type: String},
     otpExpires: {type: Date},
 },
