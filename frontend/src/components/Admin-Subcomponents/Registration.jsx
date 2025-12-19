@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { registerStyles as styles } from "../../styles/tailwindClasses";
+import { registerStyles as styles , selectStyles} from "../../styles/tailwindClasses";
+import axios from "axios"
 
 import {
   FaUser,
@@ -9,6 +10,7 @@ import {
   FaBuilding,
   FaGraduationCap,
 } from "react-icons/fa";
+
 function Registration() {
   const [profileData, setProfileData] = useState({
     username: "",
@@ -16,8 +18,14 @@ function Registration() {
     password: "",
     designation: "",
     department: "",
-    qualification: "",
+    qualification: [],
   });
+  const branchOptions = {
+    'B.Tech': ["CSE","ECE","MECH","ARCH","IT","CIVIL"],
+    'M.Tech':["CSE","ECE","MECH","ARCH","IT","CIVIL"],
+    'PhD':["CSE","ECE","MECH","ARCH","IT","CIVIL"]
+
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -25,10 +33,52 @@ function Registration() {
       [name]: value,
     }));
   };
-  const handleSubmit = (e) => {
+  const handleQualificationChange = (degree) => {
+  setProfileData((prevData) => {
+    const exists = prevData.qualification.find(
+      (q) => q.degree === degree
+    );
+
+    if (exists) {
+      return {
+        ...prevData,
+        qualification: prevData.qualification.filter(
+          (q) => q.degree !== degree
+        ),
+      };
+    } else {
+      return {
+        ...prevData,
+        qualification: [
+          ...prevData.qualification,
+          { degree, branch: "" },
+        ],
+      };
+    }
+  });
+};
+  const handleBranchChange = (degree, branch) => {
+  setProfileData((prev) => ({
+    ...prev,
+    qualification: prev.qualification.map((q) =>
+      q.degree === degree ? { ...q, branch } : q
+    ),
+  }));
+};
+
+  
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log(profileData);
-  };
+    try{
+      const res =  await axios.post("http://localhost:5000/api/users/register",
+        profileData);
+
+      alert(res.json)
+  }catch(err){
+      alert(err)
+  }
+}
+    
   return (
     <div className="flex flex-col h-screen overflow-x-hidden items-center bg-amber-200 justify-center">
       <div className="w-screen overflow-x-hidden h-40 shadow-2xl flex space-x-230 ">
@@ -48,13 +98,14 @@ function Registration() {
             Add new faculty members to the system
           </p>
         </div>
-        <div className="bg-amber-100  h-180 rounded-b-md ml-60 mr-60 shadow-2xl p-12">
+        <div className="bg-amber-100  h-220 rounded-b-md ml-60 mr-60 shadow-2xl p-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
             <label className={styles.labelBase}>
               Name
               <FaUser className="absolute left-3 top-15 text-slate-500 text-[25px]" />
               <input
                 className={styles.inputField}
+                
                 name="username"
                 value={profileData.username}
                 onChange={handleChange}
@@ -115,17 +166,57 @@ function Registration() {
                 <option value="ARCH">Architecture</option>
               </select>
             </label>
-            <label className={styles.labelBase}>
+          
+            <div className="flex flex-col gap-6 pl-8 w-125 h-80 bg-amber-50 border-2 border-gray-400 rounded-md">
+                <label className={selectStyles.labelBase}>
+                <FaGraduationCap className="absolute text-slate-500 text-[20px] left-0 top-3"/>
               Qualification
-              <FaGraduationCap className="absolute left-3 top-15 text-slate-500 text-[25px]" />
-              <input
-                className={styles.inputField}
-                name="qualification"
-                value={profileData.qualification}
-                onChange={handleChange}
-                placeholder="Enter qualification"
-              />
-            </label>
+              </label>
+               {["B.Tech", "M.Tech", "PhD"].map((degree) => {
+                  const selected = profileData.qualification.find(
+                  (q) => q.degree === degree
+                  );
+
+                return (
+                        <div key={degree} className="flex gap-2">
+                            {/* Checkbox */}
+                          <label className="flex items-center gap-3 text-[18px] text-slate-700">
+                                <input
+                                 type="checkbox"
+                                 checked={!!selected}
+                                 onChange={() => handleQualificationChange(degree)}
+                                 className="w-4 h-4"
+                                />
+                            <span className="font-medium">{degree}</span>
+                          </label>
+                  
+        {/* Branch dropdown (only if checked) */}
+        
+        {selected && (
+          
+          <select
+            className={selectStyles.inputField}
+            value={selected.branch}
+            onChange={(e) =>
+              handleBranchChange(degree, e.target.value)
+            }
+          >
+            <option value="">Select branch</option>
+            {branchOptions[degree].map((branch) => (
+              <option key={branch} value={branch}>
+                {branch}
+              </option>
+            ))}
+          </select>
+        )}
+        
+      </div>
+    );
+  })}
+</div>
+</div>
+
+            
             <button
               className="w-48 h-12 bg-cyan-950 text-white rounded-2xl mt-10 block mx-auto hover:bg-cyan-900"
               onClick={handleSubmit}
@@ -135,8 +226,8 @@ function Registration() {
           </div>
         </div>
       </div>
-    </div>
+  
   );
-}
 
+}
 export default Registration;
