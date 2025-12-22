@@ -12,18 +12,14 @@ const generateToken = (id)=>{
 
 // register controller
 const register = async (req,res)=>{
-    const {name, email, password, designation, department, qualification} = req.body;
+    const {username, email, password, designation, department, qualification} = req.body;
+    
     try{
         // input type check
         if (
-            typeof name !== "string"||
-            typeof email !== "string"||
-            typeof password !== "string"||
-            typeof designation !== "string" ||
-            typeof department !== "string" ||
-            typeof qualification !== "string"
+            !username || !email || !password || !designation || !department || !qualification
         ) {
-            return res.status(400).json({message: "Invalid input"});
+            return res.status(400).json({message: "All field required"});
         }
         // no duplicate
         const lowerEmail = email.toLowerCase().trim();
@@ -35,19 +31,21 @@ const register = async (req,res)=>{
         }
         // if user ont exist
         const user = await User.create({
-            name,
+            username,
             email: lowerEmail,
             password,
             designation,
             department,
             qualification
         });
+        
         if(user) {
            return res.status(201).json({
             message: "Registration Successful! Please Login to verify your account."
            });
         }
     } catch (err){
+        console.log(err)
         res.status(500).json({message: "invalid input"});
     }
 };
@@ -55,12 +53,14 @@ const register = async (req,res)=>{
 // login controller
 const login = async (req,res)=>{
     const {email, password} = req.body;
+    console.log(email,password)
     try{
         // type check
         if(
             typeof email !== "string" ||
             typeof password !== "string"
         ) {
+            console.log("hello")
             return res.status(400).json({message: "Invalid input"});
         }
         // no duplicate
@@ -68,6 +68,7 @@ const login = async (req,res)=>{
 
         // find user
         const user = await User.findOne({email: lowerEmail});
+        console.log(user)
         if(user && (await user.matchPassword(password))){
 
             // generating otp
@@ -87,9 +88,11 @@ const login = async (req,res)=>{
                 require:true
             });
         } else{ 
+            
             res.status(401).json({message: 'Invalid email or password'});
         }
     } catch (err){
+        console.log(err)
         res.status(500).json({message: err.message});
     }
 };
@@ -97,6 +100,7 @@ const login = async (req,res)=>{
 // OTP veriy
 const verifyOTP = async (req,res) => {
     const {email, otp} = req.body;
+    console.log(email)
     try{
         const user = await User.findOne({email});
         if(!user){

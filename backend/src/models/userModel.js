@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = mongoose.Schema({
-    name: {
+    username: {
         type: String,
         required: true
     },
@@ -21,28 +21,41 @@ const userSchema = mongoose.Schema({
         enum:[
             'HOD',
             'Faculty',
-            'Principal'
+            'Principal',
+            'Admin'
         ]
     },
     department:{
         type: String,
         required:true,
         enum:[
-            'Computer Science Engg',
-            'Electronics & Communication Engg', 
-            'Mechanical Engg', 
-            'Civil Engg', 
-            'Architecture'
+            'CS',
+            'EC', 
+            'MECH', 
+            'CIVIL', 
+            'A'
         ]
     },
-    qualification:{
-        type:String,
-        required:true
+    qualification: {
+      type: [
+        {
+          degree: { type: String, required: true },
+          branch: { type: String }
+        }
+      ],
+      required: true,
+      validate: {
+        validator: function (arr) {
+          return Array.isArray(arr) && arr.length > 0;
+        },
+        message: "At least one qualification is required"
+      }
     },
-    otp: {type: String},
-    otpExpires: {type: Date},
-},
-{timestamps: true},
+
+    otp: { type: String },
+    otpExpires: { type: Date }
+  },
+  { timestamps: true }
 );
 
 // encrytion password before saving

@@ -10,7 +10,7 @@ router.post('/register',register);
 
 // login rout
 // you can acess this api by going to "http://localhost:5000/api/users/login"
-router.post('/login', loginLimiter, login);
+router.post('/login',login);
 
 // verify rout
 // you can acess this api by going to "http://localhost:5000/api/users/verifyOTP"
