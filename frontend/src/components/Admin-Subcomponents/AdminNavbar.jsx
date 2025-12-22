@@ -12,7 +12,7 @@ function AdminNavbar() {
   }
   return (
     <>
-      <div className="w-100 bg-slate-700 flex flex-col">
+      <div className="bg-slate-700 flex flex-col h-full">
         <div className="h-30 bg-slate-900 flex items-center justify-center shadow-2xl">
           <h1 className="text-3xl font-bold text-white">Admin Portal</h1>
         </div>

@@ -72,25 +72,25 @@ function Registration() {
     try{
       const res =  await axios.post("http://localhost:5000/api/users/register",
         profileData);
-
-      alert(res.json)
+      console.log(res.data.message)
+      alert(res.data.message)
   }catch(err){
-      alert(err)
+       alert(err.response.data.message);
   }
 }
     
   return (
-    <div className="flex flex-col h-screen overflow-x-hidden items-center bg-amber-200 justify-center">
-      <div className="w-screen overflow-x-hidden h-40 shadow-2xl flex space-x-230 ">
-        <h1 className="text-3xl text-slate-900 p-4 pl-60 font-medium mt-5">
+    <>
+      <div className="flex h-48 bg-amber-200 shadow-2xl justify-between items-center">
+        <h1 className="text-[35px] font-medium text-slate-900 p-4 pl-10">
           Registration
         </h1>
-        <div className="bg-slate-900 h-16 w-16 mt-6 ml-8 flex items-center justify-center rounded-full shadow-2xl text-2xl text-white font-bold">
+        <div className="bg-slate-900 h-16 w-16 mr-8 flex items-center justify-center rounded-full shadow-2xl text-2xl text-white font-bold">
           A
         </div>
       </div>
-      <div className="w-screen overflow-x-hidden bg-amber-100 p-3">
-        <div className=" h-40 bg-cyan-950 rounded-t-md p-10 mt-12 ml-60 mr-60 shadow-2xl border border-cyan-300">
+      <div className="overflow-x-hidden bg-amber-100 p-2">
+        <div className=" h-40 bg-cyan-950 rounded-t-md p-10 w-full mt-12 max-w-6xl mx-auto shadow-2xl border border-cyan-300">
           <h2 className="text-[23px] font-semibold text-white mt-3">
             Faculty Profile Registration
           </h2>
@@ -98,8 +98,9 @@ function Registration() {
             Add new faculty members to the system
           </p>
         </div>
-        <div className="bg-amber-100  h-220 rounded-b-md ml-60 mr-60 shadow-2xl p-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+        <div className="bg-amber-100  min-h-screen max-w-6xl rounded-b-md mx-auto shadow-2xl p-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 gap-y-12 p-6">
+            
             <label className={styles.labelBase}>
               Name
               <FaUser className="absolute left-3 top-15 text-slate-500 text-[25px]" />
@@ -140,13 +141,13 @@ function Registration() {
                 className="absolute left-3 top-15 text-slate-500 text-[25px]"
                
               />
-              <input
-                className={styles.inputField}
-                name="designation"
-                value={profileData.designation}
-                onChange={handleChange}
-                 placeholder="Enter designation"
-              />
+              <select className={styles.inputField} name='designation' value={profileData.designation} onChange={handleChange}>
+                <option selected >Select designation</option>
+                <option value="Principal">Principal</option>
+                <option value="HOD">HOD</option>
+                <option value="Faculty">Faculty</option>
+                <option value="Admin">Admin</option>
+              </select>
             </label>
             <label className={styles.labelBase}>
               Department
@@ -166,67 +167,69 @@ function Registration() {
                 <option value="ARCH">Architecture</option>
               </select>
             </label>
-          
-            <div className="flex flex-col gap-6 pl-8 w-125 h-80 bg-amber-50 border-2 border-gray-400 rounded-md">
-                <label className={selectStyles.labelBase}>
-                <FaGraduationCap className="absolute text-slate-500 text-[20px] left-0 top-3"/>
+            <div className="flex flex-col max-w-3xl max-h-3xl">
+            <div className="flex items-center">
+              
+              <label className={selectStyles.labelBase}>
+                
               Qualification
               </label>
+          
+            </div>
+            <div className="flex flex-col mt-3 gap-6 p-6 w-full h-full bg-amber-50 border-2 border-gray-400 rounded-md">
+                <FaGraduationCap className=" text-slate-500 text-[20px]"/>
                {["B.Tech", "M.Tech", "PhD"].map((degree) => {
                   const selected = profileData.qualification.find(
                   (q) => q.degree === degree
                   );
 
                 return (
-                        <div key={degree} className="flex gap-2">
-                            {/* Checkbox */}
-                          <label className="flex items-center gap-3 text-[18px] text-slate-700">
-                                <input
-                                 type="checkbox"
-                                 checked={!!selected}
-                                 onChange={() => handleQualificationChange(degree)}
-                                 className="w-4 h-4"
-                                />
-                            <span className="font-medium">{degree}</span>
+                        <div key={degree} className="grid grid-cols-[140px_1fr] gap-4 items-center ">
+                          <label className="flex items-center gap-3 text-[17px] text-slate-700 font-medium">
+                            <input
+                              type="checkbox"
+                              checked={!!selected}
+                              onChange={() => handleQualificationChange(degree)}
+                              className="w-5 h-5 accent-cyan-600"
+                            />
+                            <span>{degree}</span>
                           </label>
-                  
-        {/* Branch dropdown (only if checked) */}
-        
-        {selected && (
-          
-          <select
-            className={selectStyles.inputField}
-            value={selected.branch}
-            onChange={(e) =>
-              handleBranchChange(degree, e.target.value)
-            }
-          >
-            <option value="">Select branch</option>
-            {branchOptions[degree].map((branch) => (
-              <option key={branch} value={branch}>
-                {branch}
-              </option>
-            ))}
-          </select>
-        )}
-        
-      </div>
-    );
-  })}
+
+                          {selected && (
+                            <select
+                              className="h-10 px-3 border-2 border-gray-300 rounded-md focus:outline-none focus:border-cyan-500 text-slate-700 bg-white"
+                              value={selected.branch}
+                              onChange={(e) => handleBranchChange(degree, e.target.value)}
+                            >
+                              <option value="">Select branch</option>
+                              {branchOptions[degree].map((branch) => (
+                                <option key={branch} value={branch}>
+                                  {branch}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      );
+                  })}
+
 </div>
+
+</div> 
 </div>
 
             
             <button
-              className="w-48 h-12 bg-cyan-950 text-white rounded-2xl mt-10 block mx-auto hover:bg-cyan-900"
+              className="w-48 h-12 bg-cyan-950 text-white rounded-2xl mt-15 block mx-auto hover:bg-cyan-900"
               onClick={handleSubmit}
             >
               Register
             </button>
+          
           </div>
         </div>
-      </div>
-  
+     
+  </>
   );
 
 }

@@ -1,8 +1,10 @@
 import { createBrowserRouter} from 'react-router-dom'
 import Admin from '../Admin'
+
 import Login from '../Login'
 import Home from '../Home'
 import Registration from '../Admin-Subcomponents/Registration'
+import OTPForm from '../OTPForm'
 
 const router = createBrowserRouter([
   { path:'/', element:<Home/>},
@@ -12,7 +14,14 @@ const router = createBrowserRouter([
       {path:'register',element:<Registration/>}
     ]
   },
-  { path:'/login' , element:<Login/>},
+  { path:'/login' , 
+    element:<Login/>,
+    
+  },
+  {
+    path:'/OTPForm',
+    element:<OTPForm/>
+  }
   
 ])
 
