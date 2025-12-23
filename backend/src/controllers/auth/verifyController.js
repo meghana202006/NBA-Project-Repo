@@ -11,30 +11,39 @@ const generateToken = (id)=>{
 // OTP veriy
 const verifyOTP = async (req,res) => {
     const {email, otp} = req.body;
-    console.log(email)
     try{
-        const user = await User.findOne({email});
-        if(!user){
-            return res.status(400).json({message: "User not found"});
-        } 
-        
-        // otp check
-        if (user.otp === otp && user.otpExpires > Date.now()){
-            // clearing otp
-            user.otp = undefined;
-            user.otpExpires = undefined;
-            await user.save();
-            // send token
-            res.json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                token: generateToken(user._id),
-                message: "Login Successful!"
-            });
-        } else{
-            res.status(400).json({message:"Invalid or expired OTP"});
+        if (!email || !otp) {
+            return res.status(400).json({message:"Email and OTP required"})
         }
+
+        const lowerEmail = email.toLowerCase().trim();
+        const user = await User.findOne({email: lowerEmail});
+
+        if(!user || !user.otp){
+            return res.status(400).json({message: "Invalid request"});
+        }
+        
+        if (user.otpExpires < Date.now()){
+            return res.status(400).json({message:"OTP expired"})
+        }
+        if(user.otp !== otp){
+            return res.status(400).json({message:"Invaild OTP"});
+        }
+
+        // otp clear
+        user.otp = undefined;
+        user.otpExpires = undefined;
+        await user.save();
+        
+        // send token
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            token: generateToken(user._id),
+            message: "Login Successful!"
+        });
+        
     } catch(err){
         console.log(err);
         res.status(500).json({message:"Server Error"});

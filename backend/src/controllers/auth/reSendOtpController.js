@@ -6,6 +6,10 @@ const reSendOTP = async (req,res) => {
     const {email} = req.body;
 
     try{
+        if(!email) {
+            return ResizeObserver.status(400).json({message: "Email required"});
+        }
+
         const lowerEmail = email.toLowerCase().trim();
         const user = await User.findOne({email: lowerEmail});
 
@@ -17,7 +21,8 @@ const reSendOTP = async (req,res) => {
 
         await User.updateOne(
             {_id: user._id},
-            {$set: {otp:otp, otp:otpExpires}}
+            {$set: { otp: otp, otpExpires: otpExpires }}
+
         );
 
         await sendEmail(user.email, otp);

@@ -1,10 +1,11 @@
 const User = require('../../models/userModel');
 const sendEmail = require('../../utils/sendEmail');
+const genOTP = require('../../utils/otpGenerator');
+
 
 // login controller
 const login = async (req,res)=>{
     const {email, password} = req.body;
-    console.log(email,password)
     try{
         // type check
         if(
@@ -22,7 +23,7 @@ const login = async (req,res)=>{
         console.log(user)
         if(user && (await user.matchPassword(password))){
 
-            const {otp, otpExpires} = generateOTP();
+            const {otp, otpExpires} = genOTP();
 
             await User.updateOne(
                 {_id:user._id},
@@ -32,9 +33,9 @@ const login = async (req,res)=>{
             // send email
             await sendEmail(user.email, otp);
             res.json({
-                message: "OTP sent to your email (Expires in 1 min)",
+                message: "OTP sent to your email (valid for 1 min)",
                 email: user.email,
-                require:true
+                requireOTP:true
             });
         } else{ 
             res.status(401).json({message: 'Invalid email or password'});

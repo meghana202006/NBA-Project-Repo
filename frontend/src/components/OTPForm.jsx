@@ -26,6 +26,10 @@ function OTPForm({formData , onAuthChange}) {
         otp:newotp
       }
     )
+    // you had never save the token so you are not able to see the token 
+      localStorage.setItem("token", res.data.token);
+      console.log(localStorage.getItem("token"));
+           
       console.log(res.data.message)
       alert(res.data.message)
     }catch(err)
